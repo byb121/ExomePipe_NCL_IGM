@@ -7,7 +7,7 @@ REF_FILE="/users/data/GATK/bundle2.8/hg19/ucsc.hg19.YAOBO.fasta"
 AnnovarDIR="/users/a5907529/data/Files_HG/vcf_annotation_november2013"
 
 ANOVAR="N" #use to indicate if Anovar output has beed produced, Y means yes, then After_Anovar script will be used
-PERL_SCRIPT_DIR=$(`pwd`)
+PERL_SCRIPT_DIR=$(pwd)
 PERL_SCRIPT="${PERL_SCRIPT_DIR}/VCF_2_annotated_xlsx_20140501.pl"
 PERL_SCRIPT_AF_ANOVAR="${PERL_SCRIPT_DIR}/VCF_2_annotated_xlsx_20140501_After_Annovared.pl" #note this name has to contain 'After_Annovared', otherwise GATK will start to select samples
 
