@@ -1,6 +1,9 @@
 ExomePipe_NCL_IGM
 =================
 
+Intro
+-----------------
+
 This is a tool kit from exome-seq data analysis. It utilizes a HPC managed by Sun Grid Engine and foucus on germline variants detection exclusively for now. The scripts used in each stage of the analysis are grouped in an folder. There are two types of scripts right now:
 1. The scripts doing the work, and
 2. The scripts control workflow and sumbit ordered scripts to the queue engine of an HPC.
