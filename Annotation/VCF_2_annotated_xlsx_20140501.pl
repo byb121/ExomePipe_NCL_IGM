@@ -1350,7 +1350,7 @@ sub usage {
     print "--CNV CNV result file, output of HG's Annotate_CNVs_combine_multiple_files.pl, sample names must be consistent with the vcf.\n";
     print "--exomiserXLS Exomiser result files, separated with ',' it must be in XLS format.\n";
     print "--add_genotypeCall_flags=(Yes/No), anyt word starting with letter \"y\" will be considered as yes.\n";
-    print "--AnnovarDIR=(where Annovar is installed and annovar_YX.sh is located.) \n"
+    print "--AnnovarDIR=(where Annovar is installed and annovar_YX.sh is located.) \n";
 	return(1);
 }
 
