@@ -21,7 +21,7 @@ REF_DIR="/sharedlustre/IGM/bundle2.8/hg19"
 
 SAMPLE_PATH=`pwd`
 OUTPUT_VCF_PREFIX="New_HaplotypeCaller"
-RAW_VCF_INPUT="$SAMPLE_PATH/HaplotyperCaller.vcf"
+RAW_VCF_INPUT="$SAMPLE_PATH/HaplotypeCaller.vcf"
 
 REF_FILE="${REF_DIR}/ucsc.hg19.fasta"
 HAPMAP="${REF_DIR}/hapmap_3.3.hg19.vcf"
