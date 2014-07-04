@@ -21,7 +21,7 @@ REF_DIR="/sharedlustre/IGM/bundle2.8/hg19"
 
 SAMPLE_PATH=`pwd`
 OUTPUT_VCF_PREFIX="New_HaplotypeCaller"
-RAW_VCF_INPUT="$SAMPLE_PATH/HaplotyperCaller.vcf"
+RAW_VCF_INPUT="$SAMPLE_PATH/HaplotypeCaller.vcf"
 
 REF_FILE="${REF_DIR}/ucsc.hg19.fasta"
 HAPMAP="${REF_DIR}/hapmap_3.3.hg19.vcf"
@@ -39,6 +39,9 @@ INDEL_RECAL_FILE="${RAW_VCF_INPUT}.INDEL.recali"
 INDEL_TRANCH_FILE="${RAW_VCF_INPUT}.INDEL.tranches"
 INDEL_RECAL_R_SCRIPT="${RAW_VCF_INPUT}.INDEL.rscript"
 INDEL_RECALI_OUTPUT="$SAMPLE_PATH/${OUTPUT_VCF_PREFIX}_recali_SNP_INDEL.vcf"
+
+echo "Start to recalibrate variants is file:"
+echo "$RAW_VCF_INPUT"
 
 # SNP error model
 java -Xmx4g -jar $GATKDIR/GenomeAnalysisTK.jar -T VariantRecalibrator -R $REF_FILE \
