@@ -42,6 +42,6 @@ for SAMPLE_ID in "${INALL[@]}"
 do
        	JOB_ID1="pipe_stage1_${SAMPLE_ID}"
 	arr=("${SAMPLE_ID}" "${SAMPLE_PATH}" "${SCRIPT_PATH}" "$REFDIR" "${SCRATCH_DIR}" "$TARGETS" "${SEQ_PLATFORM}" "${Library_ID}" "${COV_OUT_DIR_NAME}" "${GATK_OUT_DIR_NAME}" "${WRKGDIR_NAME}" "${JAVA_TMP_DIR_NAME}")
-        qsub ${SCRIPT_PATH}/map_recali_perLane_recali_perSample_covOnTargets_26MAY2014.sh "${arr[@]}"
+        qsub -N "${JOB_ID1}" ${SCRIPT_PATH}/map_recali_perLane_recali_perSample_covOnTargets_26MAY2014.sh "${arr[@]}"
 done
 
