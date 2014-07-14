@@ -2,12 +2,13 @@
 
 ################## Paras need to be adjusted for diff samples ##############
 INALL=(D05685 D08064 D10020 D100563 D11016 D114041 D115022 D122641 D122836 D13415 D146989 D163417 D164942 D169918 D170484 D171748 D171987 D174381 D36421 D62925 D83732 D86968 D88892 D9646 D99945 D16618_D050227_D62018 D122836_D99945_D62925)
+SAMPLEDIR=$(pwd) # the folder contain the VCF file which contain all of the samples
 INPUT_VCF="$SAMPLEDIR/New_HaplotypeCaller_recali_SNP_INDEL.vcf"
 REF_FILE="/users/data/GATK/bundle2.8/hg19/ucsc.hg19.YAOBO.fasta"
 AnnovarDIR="/users/a5907529/data/Files_HG/vcf_annotation_november2013"
 
 ANOVAR="N" #use to indicate if Anovar output has beed produced, Y means yes, then After_Anovar script will be used
-PERL_SCRIPT_DIR=$(pwd)
+PERL_SCRIPT_DIR=$SAMPLEDIR # change if the annotation perl script is stored somewhere else
 PERL_SCRIPT="${PERL_SCRIPT_DIR}/VCF_2_annotated_xlsx_20140501.pl"
 PERL_SCRIPT_AF_ANOVAR="${PERL_SCRIPT_DIR}/VCF_2_annotated_xlsx_20140501_After_Annovared.pl" #note this name has to contain 'After_Annovared', otherwise GATK will start to select samples
 

@@ -33,5 +33,5 @@ perl $SCRIPT --vcf ${SAMPLE_SELECTED_VCF} \
 --outAll ${OUTPUT_Everthing} \
 --add_genotypeCall_flags Yes \
 --CNV $CNV \
---InterestedGenes $InterestedGENES
+--InterestedGenes $InterestedGENES \
 --AnnovarDIR $AnnovarDIR
