@@ -1,5 +1,5 @@
 #! /bin/bash
-#$ -cwd
+#$ -cwd -V
 #$ -j y
 #$ -pe smp 4
 #$ -l mem_free=10G,h_vmem=15G
@@ -252,7 +252,7 @@ else # merge with GATK printReads
 	echo $'\n'java -Xmx10g -Djava.io.tmpdir=${JAVA_TMP_DIR} -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $DUP_FREE_BAM_FILE_LIST -o $DUP_FREE_BAM
         java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $DUP_FREE_BAM_FILE_LIST -o $DUP_FREE_BAM
         echo samtools index $DUP_FREE_BAM
-        samtools index $MERGED_DUP_FREE_BAM
+        samtools index $DUP_FREE_BAM
 	
 
 	#clean
