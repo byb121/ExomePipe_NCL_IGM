@@ -273,7 +273,7 @@ else # merge with GATK printReads
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T RealignerTargetCreator -nt 4 -I $MERGED_BAM -R $REF_FILE -o $INTERVALS
 	echo $'\n'"["`date`"]: GATK: Realigning reads..."
 	echo java -Xmx10g -jar $GATKDIR/GenomeAnalysisTK.jar -T IndelRealigner -I $MERGED_BAM -R $REF_FILE -targetIntervals $INTERVALS -o $FINAL_BAM
-	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T IndelRealigner $MERGED_BAM -R $REF_FILE -targetIntervals $INTERVALS -o $FINAL_BAM
+	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T IndelRealigner -I $MERGED_BAM -R $REF_FILE -targetIntervals $INTERVALS -o $FINAL_BAM
 	echo rm $MERGED_BAM
 	rm $MERGED_BAM
 	echo rm $INTERVALS
