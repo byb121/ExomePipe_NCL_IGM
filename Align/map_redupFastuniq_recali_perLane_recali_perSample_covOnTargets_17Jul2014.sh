@@ -1,8 +1,8 @@
 #! /bin/bash
-#$ -cwd -V
+#$ -cwd
 #$ -j y
 #$ -pe smp 4
-#$ -l mem_free=10G,h_vmem=15G
+#$ -l mem_free=20G,h_vmem=25G # fastuniq require a lot of RAM
 #$ -M yaobo.xu@ncl.ac.uk
 #$ -m e
 
@@ -113,7 +113,7 @@ fi
 
 PICARD_TEMP="$WRKGDIR/Picard_Temp"
 echo $'\n'"mkdir $PICARD_TEMP"
-if [ ! -d $WRKGDIR ]; then
+if [ ! -d $PICARD_TEMP ]; then
 	mkdir $PICARD_TEMP
 else
         echo "$PICARD_TEMP exists"   
@@ -145,9 +145,12 @@ do
         #READ_FILE2="$INDIR/${SAMPLE_ID}_L00${LANE}*val_2.fq"
 	#**********************/	
 
-	READ_FILE1="$INDIR/${SAMPLE_ID}_L00${LANE}_R1_001.fastq"
-	READ_FILE2="$INDIR/${SAMPLE_ID}_L00${LANE}_R2_001.fastq"
-	
+	READ_FILE1=( "$INDIR/${SAMPLE_ID}_L00${LANE}_R1_001.fastq" )
+	READ_FILE2=( "$INDIR/${SAMPLE_ID}_L00${LANE}_R2_001.fastq" )
+
+	READ_FILE1=${READ_FILE1[0]}; READ_FILE1=${READ_FILE1%'.gz'}
+        READ_FILE2=${READ_FILE2[0]}; READ_FILE2=${READ_FILE2%'.gz'}	
+
 	# can handle zipped file now, will do unzip automatically
 	if [ -f "$READ_FILE1.gz" ]; then
 		echo "find gzipped fastq file $READ_FILE1.gz, unzip now.."
@@ -194,29 +197,30 @@ do
 	
 	echo $'\n'"["`date`"]: PICARD to sort the sam file ${SAM_FILE1}"
 	echo "$Picard_sort INPUT=$SAM_FILE1 OUTPUT=$RAW_BAM SORT_ORDER=coordinate TMP_DIR=$PICARD_TEMP"
-	$Picard_sort INPUT=$SAM_FILE1 OUTPUT=$RAW_BAM SORT_ORDER=coordinate
+	$Picard_sort INPUT=$SAM_FILE1 OUTPUT=$RAW_BAM SORT_ORDER=coordinate TMP_DIR=$PICARD_TEMP
 	echo $'\n'"samtools index $RAW_BAM"
         samtools index $RAW_BAM
-	
+	echo rm $SAM_FILE1
+	rm $SAM_FILE1
 	#GATK to refine the alignment
 	INTERVALS_LANE="$WRKGDIR/${SAMPLE_ID}_${LANE}_nodups.sorted.bam.intervals"
 	REALIGNED_BAM_LANE="$WRKGDIR/${SAMPLE_ID}_${LANE}_nodups.sorted.realigned.bam"
 	RECAL_TABLE_GRP_LANE="$WRKGDIR/${SAMPLE_ID}_${LANE}_nodups.sorted.realigned.bam.grp"
 
 	echo $'\n'"["`date`"]:GATK: Creating realignment intervals for $RAW_BAM"
-	echo java -Xmx10g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T RealignerTargetCreator -nt 4 -I $RAW_BAM -R $REF_FILE -o $INTERVALS_LANE
+	echo java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T RealignerTargetCreator -nt 4 -I $RAW_BAM -R $REF_FILE -o $INTERVALS_LANE
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T RealignerTargetCreator -nt 4 -I $RAW_BAM -R $REF_FILE -o $INTERVALS_LANE
 	echo $'\n'"["`date`"]:GATK: Realigning reads..."
-	echo java -Xmx10g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T IndelRealigner -I $RAW_BAM -R $REF_FILE -targetIntervals $INTERVALS_LANE -o $REALIGNED_BAM_LANE
+	echo java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T IndelRealigner -I $RAW_BAM -R $REF_FILE -targetIntervals $INTERVALS_LANE -o $REALIGNED_BAM_LANE
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T IndelRealigner -I $RAW_BAM -R $REF_FILE -targetIntervals $INTERVALS_LANE -o $REALIGNED_BAM_LANE
 	echo "rm $INTERVALS_LANE"
 	rm $INTERVALS_LANE
 	
 	echo $'\n'"["`date`"]:GATK: Calculating recalibration tables..."
-	echo java -Xmx10g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T BaseRecalibrator -nct 4 -I $REALIGNED_BAM_LANE -R $REF_FILE $COVARIATES -knownSites $DBSNP_VCF -o $RECAL_TABLE_GRP_LANE
+	echo java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T BaseRecalibrator -nct 4 -I $REALIGNED_BAM_LANE -R $REF_FILE $COVARIATES -knownSites $DBSNP_VCF -o $RECAL_TABLE_GRP_LANE
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T BaseRecalibrator -nct 4 -I $REALIGNED_BAM_LANE -R $REF_FILE $COVARIATES -knownSites $DBSNP_VCF -o $RECAL_TABLE_GRP_LANE
 	echo $'\n'"["`date`"]:GATK: Creating Recalibrated alignment file..."
-	echo java -Xmx6g -Djava.io.tmpdir=${JAVA_TMP_DIR} -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T PrintReads -nct 4 -R $REF_FILE -I $REALIGNED_BAM_LANE -BQSR $RECAL_TABLE_GRP_LANE -o $BAM_FILE1
+	echo java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T PrintReads -nct 4 -R $REF_FILE -I $REALIGNED_BAM_LANE -BQSR $RECAL_TABLE_GRP_LANE -o $BAM_FILE1
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T PrintReads -nct 4 -R $REF_FILE -I $REALIGNED_BAM_LANE -BQSR $RECAL_TABLE_GRP_LANE -o $BAM_FILE1
 	echo rm $REALIGNED_BAM_LANE
 	rm $REALIGNED_BAM_LANE
@@ -244,12 +248,12 @@ then
 	mv $RAW_BAM $DUP_FREE_BAM
 else # merge with GATK printReads
 	MERGED_BAM="$WRKGDIR/${SAMPLE_ID}.bam"
-	echo $'\n'java -Xmx10g -Djava.io.tmpdir=${JAVA_TMP_DIR} -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $BAM_FILE_LIST -o $MERGED_BAM
+	echo $'\n'java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $BAM_FILE_LIST -o $MERGED_BAM
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $BAM_FILE_LIST -o $MERGED_BAM
 	echo "samtools index $MERGED_BAM"	
 	samtools index $MERGED_BAM
 	
-	echo $'\n'java -Xmx10g -Djava.io.tmpdir=${JAVA_TMP_DIR} -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $DUP_FREE_BAM_FILE_LIST -o $DUP_FREE_BAM
+	echo $'\n'java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $DUP_FREE_BAM_FILE_LIST -o $DUP_FREE_BAM
         java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T PrintReads -nct 4 -R $REF_FILE $DUP_FREE_BAM_FILE_LIST -o $DUP_FREE_BAM
         echo samtools index $DUP_FREE_BAM
         samtools index $DUP_FREE_BAM
@@ -269,17 +273,15 @@ else # merge with GATK printReads
 	# GATK recalibration at sample level #
 	INTERVALS="$WRKGDIR/${SAMPLE_ID}_nodups.bam.intervals"
 	echo $'\n'"["`date`"]: GATK: Creating realignment intervals..."
-	echo java -Xmx10g -jar $GATKDIR/GenomeAnalysisTK.jar -T RealignerTargetCreator -nt 4 -I $MERGED_BAM -R $REF_FILE -o $INTERVALS
+	echo java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T RealignerTargetCreator -nt 4 -I $MERGED_BAM -R $REF_FILE -o $INTERVALS
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T RealignerTargetCreator -nt 4 -I $MERGED_BAM -R $REF_FILE -o $INTERVALS
 	echo $'\n'"["`date`"]: GATK: Realigning reads..."
-	echo java -Xmx10g -jar $GATKDIR/GenomeAnalysisTK.jar -T IndelRealigner -I $MERGED_BAM -R $REF_FILE -targetIntervals $INTERVALS -o $FINAL_BAM
+	echo java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T IndelRealigner -I $MERGED_BAM -R $REF_FILE -targetIntervals $INTERVALS -o $FINAL_BAM
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T IndelRealigner -I $MERGED_BAM -R $REF_FILE -targetIntervals $INTERVALS -o $FINAL_BAM
 	echo rm $MERGED_BAM
 	rm $MERGED_BAM
 	echo rm $INTERVALS
 	rm $INTERVALS
-	echo rm $SORTED_BAM_FILE_NODUPS
-	rm $SORTED_BAM_FILE_NODUPS
 fi
 echo samtools index $FINAL_BAM
 samtools index $FINAL_BAM
