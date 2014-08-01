@@ -1,8 +1,8 @@
 #! /bin/bash
-#$ -cwd
+#$ -cwd -V
 #$ -j y
 #$ -pe smp 4
-#$ -l mem_free=20G,h_vmem=25G # fastuniq require a lot of RAM
+#$ -l h_vmem=20G
 #$ -M yaobo.xu@ncl.ac.uk
 #$ -m e
 
@@ -42,70 +42,96 @@ COVARIATES="-cov ReadGroupCovariate -cov QualityScoreCovariate -cov ContextCovar
 #/************************ fmscluster add modules
 # need to add line here to load fastuniq module
 #GATK 3.1.1 /home/a5907529/WORKING_DATA/QC_GOOD/GATK3
-#module load apps/samtools/0.1.19
-#module load apps/bwa/0.7.6.a
-#module load apps/picard/1.107
-#module load apps/bedtools/2.19.0
-#module load apps/perl/5.18.2
-#module add apps/java
-#SCRATCH_DIR=$TMPDIR
-#export _JAVA_OPTIONS="-XX:-UseLargePages -Xms4096m"
-#PICARDDIR="$PICARD_PATH"
-#GATKDIR="/home/a5907529/WORKING_DATA/QC_GOOD/GATK3"
-#INDIR="${SAMPLE_PATH}/${SAMPLE_ID}"
+module load apps/samtools/0.1.19
+module load apps/bwa/0.7.6.a
+module load apps/picard/1.107
+module load apps/bedtools/2.19.0
+module load apps/perl/5.18.2
+module add apps/java/jre-1.7.0_55
+module add apps/gatk/3.2-protected
+SCRATCH_DIR=$TMPDIR
+export _JAVA_OPTIONS="-XX:-UseLargePages "
+PICARDDIR="$PICARD_PATH"
+GATKDIR="$GATK_ROOT"
+INDIR="${SAMPLE_PATH}/Sample_${SAMPLE_ID}"
 #WRKGDIR="${SCRATCH_DIR}/${SAMPLE_ID}${WRKGDIR_NAME}"
-#JAVA_TMP_DIR="${SCRATCH_DIR}/${SAMPLE_ID}.Java.tmp.dir.${JAVA_TMP_DIR_NAME}"
-#echo $'\n'"mkdir $JAVA_TMP_DIR"
-#mkdir $JAVA_TMP_DIR
-#Picard_sort="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/SortSam.jar VALIDATION_STRINGENCY=LENIENT"
-#Picard_nodups="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT"
-#Picard_CleanSam="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/CleanSam.jar VALIDATION_STRINGENCY=LENIENT"
+WRKGDIR="$INDIR/${SAMPLE_ID}${WRKGDIR_NAME}"
+#JAVA_TMP_DIR="${SCRATCH_DIR}/${SAMPLE_ID}.Java.tmp.dir${JAVA_TMP_DIR_NAME}"
+JAVA_TMP_DIR="${INDIR}/${SAMPLE_ID}.Java.tmp.dir${JAVA_TMP_DIR_NAME}"
+echo $'\n'"mkdir $JAVA_TMP_DIR"
+if [ ! -d  $JAVA_TMP_DIR ]
+then
+	mkdir $JAVA_TMP_DIR
+else
+        echo "$JAVA_TMP_DIR exists"  
+fi
+Picard_sort="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/SortSam.jar VALIDATION_STRINGENCY=LENIENT"
 #*************************/
 
 #/************************ lampredi2 add modules
-module load apps/fastuniq/1.1/gcc-4.4.6
-module load apps/samtools/0.1.18/gcc-4.4.6
-module load apps/bwa/0.7.4/gcc-4.4.6
-module load apps/picard/1.85/noarch
-module load apps/bedtools/2.17.0/gcc-4.4.6
-module load apps/perl/5.16.1/gcc-4.4.6
-module load apps/gatk/3.1.1/noarch
-INDIR="${SAMPLE_PATH}/${SAMPLE_ID}"
-WRKGDIR="${SCRATCH_DIR}/${SAMPLE_ID}${WRKGDIR_NAME}"
-JAVA_TMP_DIR="${SCRATCH_DIR}/${SAMPLE_ID}.Java.tmp.dir.${JAVA_TMP_DIR_NAME}"
-echo $'\n'"mkdir $JAVA_TMP_DIR"
-mkdir $JAVA_TMP_DIR
-Picard_sort="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/java/SortSam.jar VALIDATION_STRINGENCY=LENIENT"
-Picard_nodups="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/java/MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT"
-Picard_CleanSam="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/java/CleanSam.jar VALIDATION_STRINGENCY=LENIENT"
+#module load apps/fastuniq/1.1/gcc-4.4.6
+#module load apps/samtools/0.1.18/gcc-4.4.6
+#module load apps/bwa/0.7.4/gcc-4.4.6
+#module load apps/picard/1.85/noarch
+#module load apps/bedtools/2.17.0/gcc-4.4.6
+#module load apps/perl/5.16.1/gcc-4.4.6
+######module load apps/gatk/3.1.1/noarch
+#GATKDIR="/users/a5907529/archive/biosofts/GATK3.2-2" #if this is installed on the lampredi2, change it accordingly
+#INDIR="${SAMPLE_PATH}/Sample_${SAMPLE_ID}"
+#WRKGDIR="${SCRATCH_DIR}/${SAMPLE_ID}${WRKGDIR_NAME}"
+#JAVA_TMP_DIR="${SCRATCH_DIR}/${SAMPLE_ID}.Java.tmp.dir${JAVA_TMP_DIR_NAME}"
+#echo $'\n'"mkdir $JAVA_TMP_DIR"
+#if [ ! -d  $JAVA_TMP_DIR ]
+#then
+#        mkdir $JAVA_TMP_DIR
+#else
+#        echo "$JAVA_TMP_DIR exists"  
+#fi
+#Picard_sort="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/java/SortSam.jar VALIDATION_STRINGENCY=LENIENT"
 #*************************/
 
 #Output folders' names
+FASTQC_OUTPUT="${SAMPLE_PATH}/FastQC_dupfree"
 COV_DIR="${INDIR}/${COV_DIR_NAME}"
 GATK_OUT_DIR="${INDIR}/${GATK_OUT_DIR_NAME}"
 DUP_FREE_BAM_DIR="${INDIR}/${DUP_FREE_BAM_DIR_NAME}"
 
 # prepare folders
 echo $'\n'mkdir $WRKGDIR
-if [ ! -d $WRKGDIR ]; then
+if [ ! -d $WRKGDIR ]
+then
 	mkdir $WRKGDIR
 else 
 	echo "$WRKGDIR exists"	
 fi
+
+echo $'\n'mkdir $FASTQC_OUTPUT
+if [ ! -d $FASTQC_OUTPUT ]
+then
+        mkdir $FASTQC_OUTPUT
+else
+	echo "$FASTQC_OUTPUT exists"  
+fi
+
 echo $'\n'mkdir $COV_DIR
-if [ ! -d $COV_DIR ]; then
+if [ ! -d $COV_DIR ]
+then
 	mkdir $COV_DIR
 else
         echo "$COV_DIR exists"   
 fi
+
 echo $'\n'mkdir $GATK_OUT_DIR
-if [ ! -d $GATK_OUT_DIR ]; then
+if [ ! -d $GATK_OUT_DIR ]
+then
 	mkdir $GATK_OUT_DIR
 else
         echo "$GATK_OUT_DIR exists"   
 fi
+
 echo $'\n'mkdir $DUP_FREE_BAM_DIR
-if [ ! -d $DUP_FREE_BAM_DIR ]; then
+if [ ! -d $DUP_FREE_BAM_DIR ]
+then
 	mkdir ${DUP_FREE_BAM_DIR}
 else
         echo "${DUP_FREE_BAM_DIR} exists"   
@@ -113,7 +139,8 @@ fi
 
 PICARD_TEMP="$WRKGDIR/Picard_Temp"
 echo $'\n'"mkdir $PICARD_TEMP"
-if [ ! -d $PICARD_TEMP ]; then
+if [ ! -d $PICARD_TEMP ]
+then
 	mkdir $PICARD_TEMP
 else
         echo "$PICARD_TEMP exists"   
@@ -124,7 +151,8 @@ PICARD_LOG="$WRKGDIR/${SAMPLE_ID}_picard.log"
 LANES_STRING=`perl ${SCRIPTS_DIR}/detectSampleLanes.pl $SAMPLE_PATH $SAMPLE_ID`
 LANES=($LANES_STRING)
 
-if [ ${#LANES[@]} -lt 1 ]; then
+if [ ${#LANES[@]} -lt 1 ]
+then
 	exit "Error: No lane info detected, check file name patterns and paths"
 fi
 
@@ -134,53 +162,21 @@ echo "----------------------------- hua li li de fen jie xian ------------------
 echo "----------------------------- hua li li de fen jie xian -----------------------------"
 for LANE in "${LANES[@]}"
 do
-	echo "---------------- hua li de fen jie xian ----------------"
+	echo $'\n'"---------------- hua li de fen jie xian ----------------"
+	echo "-------------------------------------------------"
 	echo "process lane $LANE for sample ${SAMPLE_ID}"
+	echo "-------------------------------------------------"
 	SAM_FILE1="$WRKGDIR/${SAMPLE_ID}_${LANE}.sam"
 	BAM_FILE1="$WRKGDIR/${SAMPLE_ID}_${LANE}.bam" #final lane bam after GATK base recalibration
 	BAM_FILE_LIST="$BAM_FILE_LIST-I ${BAM_FILE1} "
 	
-	#/********************** if QC ed with the Trimming.sh
-	#READ_FILE1="$INDIR/${SAMPLE_ID}_L00${LANE}*val_1.fq"
-        #READ_FILE2="$INDIR/${SAMPLE_ID}_L00${LANE}*val_2.fq"
-	#**********************/	
-
-	READ_FILE1=( "$INDIR/${SAMPLE_ID}_L00${LANE}_R1_001.fastq" )
-	READ_FILE2=( "$INDIR/${SAMPLE_ID}_L00${LANE}_R2_001.fastq" )
-
-	READ_FILE1=${READ_FILE1[0]}; READ_FILE1=${READ_FILE1%'.gz'}
-        READ_FILE2=${READ_FILE2[0]}; READ_FILE2=${READ_FILE2%'.gz'}	
-
-	# can handle zipped file now, will do unzip automatically
-	if [ -f "$READ_FILE1.gz" ]; then
-		echo "find gzipped fastq file $READ_FILE1.gz, unzip now.."
-		gunzip -c "$READ_FILE1.gz" > "$READ_FILE1"
-	else
-		if [ -f $READ_FILE1 ]; then
-			echo "find file $READ_FILE1"
-		else
-			exit "fasq file name error, can not find file $READ_FILE1"
-		fi
-	fi
-
-	if [ -f "$READ_FILE2.gz" ]; then
-		echo "find gzipped fastq file $READ_FILE2.gz, unzip now.."
-                gunzip -c "$READ_FILE2.gz" > "$READ_FILE2"
-	else
-		if [ -f $READ_FILE2 ]; then
-                        echo "find file $READ_FILE2"
-                else
-                        exit "fasq file name error, can not find file $READ_FILE2"
-                fi
-        fi
-	
 	READ_FILE1_nodup="$INDIR/${SAMPLE_ID}_L00${LANE}_R1_001.nodup.fastq"
         READ_FILE2_nodup="$INDIR/${SAMPLE_ID}_L00${LANE}_R2_001.nodup.fastq"
-	FASTQ_LIST_FILE="$INDIR/${SAMPLE_ID}_L00${LANE}.temp.qlist"
-	# remvoe dups with FastUniq
-	echo -e "$READ_FILE1\n$READ_FILE2" > $FASTQ_LIST_FILE
-	echo fastuniq -i "${FASTQ_LIST_FILE}" -t q -o "${READ_FILE1_nodup}" -p "${READ_FILE2_nodup}"
-	fastuniq -i "${FASTQ_LIST_FILE}" -t q -o "${READ_FILE1_nodup}" -p "${READ_FILE2_nodup}"
+	
+	echo "running fastqc on duplicates free fastqs"
+	fastqc --nogroup --noextract --outdir ${FASTQC_OUTPUT} -t 4 -q ${READ_FILE1_nodup}
+	fastqc --nogroup --noextract --outdir ${FASTQC_OUTPUT} -t 4 -q ${READ_FILE2_nodup}
+	echo "done!"
 	
 	RAW_BAM="$SAM_FILE1.bam"
 	DUP_FREE_BAM_FILE_LIST="$DUP_FREE_BAM_FILE_LIST-I ${RAW_BAM} "
@@ -190,8 +186,6 @@ do
 	echo bwa mem -R "@RG\tID:FlowCell.${LANE}.${SAMPLE_ID}\tSM:${SAMPLE_ID}\tPL:${SEQ_PLATFORM}\tLB:${Library_ID}.${SAMPLE_ID}" -t 4 -M $REF_FILE $READ_FILE1_nodup $READ_FILE2_nodup "> $SAM_FILE1"
 	bwa mem -R "@RG\tID:FlowCell.${LANE}.${SAMPLE_ID}\tSM:${SAMPLE_ID}\tPL:${SEQ_PLATFORM}\tLB:${Library_ID}.${SAMPLE_ID}" -t 4 -M $REF_FILE $READ_FILE1_nodup $READ_FILE2_nodup > $SAM_FILE1 # "-M" is for Picard compatibility
 
-	rm ${READ_FILE1}
-	rm ${READ_FILE2}
 	rm ${READ_FILE1_nodup}
 	rm ${READ_FILE2_nodup}
 	
@@ -202,6 +196,7 @@ do
         samtools index $RAW_BAM
 	echo rm $SAM_FILE1
 	rm $SAM_FILE1
+	
 	#GATK to refine the alignment
 	INTERVALS_LANE="$WRKGDIR/${SAMPLE_ID}_${LANE}_nodups.sorted.bam.intervals"
 	REALIGNED_BAM_LANE="$WRKGDIR/${SAMPLE_ID}_${LANE}_nodups.sorted.realigned.bam"
@@ -213,7 +208,7 @@ do
 	echo $'\n'"["`date`"]:GATK: Realigning reads..."
 	echo java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T IndelRealigner -I $RAW_BAM -R $REF_FILE -targetIntervals $INTERVALS_LANE -o $REALIGNED_BAM_LANE
 	java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -rf BadCigar -T IndelRealigner -I $RAW_BAM -R $REF_FILE -targetIntervals $INTERVALS_LANE -o $REALIGNED_BAM_LANE
-	echo "rm $INTERVALS_LANE"
+	echo rm $INTERVALS_LANE
 	rm $INTERVALS_LANE
 	
 	echo $'\n'"["`date`"]:GATK: Calculating recalibration tables..."
@@ -229,12 +224,17 @@ do
 
 	echo $'\n'"["`date`"]:GATK: Indexing bam files..."
 	echo "samtools index $BAM_FILE1"
-	echo "---------------- hua li de fen jie xian ----------------"
 	samtools index $BAM_FILE1
+        echo "-------------------------------------------------"
+        echo "Lane $LANE for sample ${SAMPLE_ID} is done!"
+        echo "-------------------------------------------------"
+	echo "---------------- hua li de fen jie xian ----------------"
+
 done
+
 echo $'\n'"------------------------------"
 echo "all lanes have been processed!"
-echo $'\n'"------------------------------"
+echo "------------------------------"
 
 echo $'\n'"Merge alignment and move files"
 # Merge and clean
@@ -288,6 +288,16 @@ fi
 echo samtools index $FINAL_BAM
 samtools index $FINAL_BAM
 
+echo $'\n'"------------------------------"
+echo "produce GVCF!"
+echo "------------------------------"
+OUTPUT_GVCF="${GATK_OUT_DIR}/${SAMPLE_ID}_nodups.realigned.recalibrated.g.vcf"
+
+java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx12g -jar $GATKDIR/GenomeAnalysisTK.jar -T HaplotypeCaller -R $REF_FILE \
+-I $FINAL_BAM \
+-o $OUTPUT_GVCF \
+-ERC GVCF --variant_index_type LINEAR --variant_index_parameter 128000
+
 # cleaning bit #
 echo rm -r $PICARD_TEMP
 rm -r $PICARD_TEMP
@@ -316,3 +326,4 @@ echo "----------------------------- hua li li de fen jie xian ------------------
 echo "----------------------------- hua li li de fen jie xian -----------------------------"
 printf "Total runtime: %d:%02d:%02d:%02.4f\n" $dd $dh $dm $ds
 echo "exit status $?"
+
