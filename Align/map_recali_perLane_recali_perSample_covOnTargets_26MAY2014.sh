@@ -70,9 +70,9 @@ WRKGDIR="${SCRATCH_DIR}/${SAMPLE_ID}${WRKGDIR_NAME}"
 JAVA_TMP_DIR="${SCRATCH_DIR}/${SAMPLE_ID}.Java.tmp.dir.${JAVA_TMP_DIR_NAME}"
 echo $'\n'"mkdir $JAVA_TMP_DIR"
 mkdir $JAVA_TMP_DIR
-Picard_sort="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/SortSam.jar VALIDATION_STRINGENCY=LENIENT"
-Picard_nodups="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT"
-Picard_CleanSam="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/CleanSam.jar VALIDATION_STRINGENCY=LENIENT"
+Picard_sort="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/java/SortSam.jar VALIDATION_STRINGENCY=LENIENT"
+Picard_nodups="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/java/MarkDuplicates.jar VALIDATION_STRINGENCY=LENIENT"
+Picard_CleanSam="java -Djava.io.tmpdir=$JAVA_TMP_DIR -Xmx8g -jar $PICARDDIR/java/CleanSam.jar VALIDATION_STRINGENCY=LENIENT"
 #*************************/
 
 #Output folders' names
@@ -104,14 +104,35 @@ do
 	BAM_FILE1="$WRKGDIR/${SAMPLE_ID}_${LANE}.bam"
 	BAM_FILE_LIST="$BAM_FILE_LIST-I ${BAM_FILE1} "
 	
-	#/********************** if QC ed with the Trimming.sh
-	#READ_FILE1="$INDIR/${SAMPLE_ID}_L00${LANE}*val_1.fq"
-        #READ_FILE2="$INDIR/${SAMPLE_ID}_L00${LANE}*val_2.fq"
-	#**********************/	
+	READ_FILE1=( $INDIR/${SAMPLE_ID}_*_L00${LANE}_R1_001.fastq* )
+        READ_FILE2=( $INDIR/${SAMPLE_ID}_*_L00${LANE}_R2_001.fastq* )
 
-	READ_FILE1="$INDIR/${SAMPLE_ID}_L00${LANE}_R1_001.fastq"
-	READ_FILE2="$INDIR/${SAMPLE_ID}_L00${LANE}_R2_001.fastq"
-	
+        READ_FILE1=${READ_FILE1[0]}; READ_FILE1=${READ_FILE1%'.gz'}
+        READ_FILE2=${READ_FILE2[0]}; READ_FILE2=${READ_FILE2%'.gz'}
+
+        # can handle zipped file now, will do unzip automatically
+        if [ -f "$READ_FILE1.gz" ]; then
+                echo "find gzipped fastq file $READ_FILE1.gz, unzip now.."
+                gunzip -c "$READ_FILE1.gz" > "$READ_FILE1"
+        else
+                if [ -f $READ_FILE1 ]; then
+                        echo "find file $READ_FILE1"
+                else
+                        exit "fasq file name error, can not find file $READ_FILE1"
+                fi
+        fi
+
+        if [ -f "$READ_FILE2.gz" ]; then
+                echo "find gzipped fastq file $READ_FILE2.gz, unzip now.."
+                gunzip -c "$READ_FILE2.gz" > "$READ_FILE2"
+        else
+                if [ -f $READ_FILE2 ]; then
+                        echo "find file $READ_FILE2"
+                else
+                        exit "fasq file name error, can not find file $READ_FILE2"
+                fi
+        fi
+
 	echo $READ_FILE1
 	echo $READ_FILE2
 	
