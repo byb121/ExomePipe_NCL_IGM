@@ -1,7 +1,9 @@
 #! /bin/bash
 #$ -cwd
-#$ -j y
-#$ -V
+#$ -l h_vmem=30g
+#$ -j y -V
+#$ -M yaobo.xu@ncl.ac.uk
+#$ -m e
 
 #/***********************
 module load apps/perl

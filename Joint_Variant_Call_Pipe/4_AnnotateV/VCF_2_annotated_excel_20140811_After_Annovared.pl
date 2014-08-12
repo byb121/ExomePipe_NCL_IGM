@@ -532,20 +532,22 @@ while (my $line=<INPUT>) {
 						$GQ = $fields[$GQ_index];
 						$AD = $fields[$AD_index];
 						#print $line."\t$GT\t$GQ\t$AD\n";
-						if ($GT =~ m/0\/1|1\/1/ && $AD ne ".") {
-							my @cov = split(",", $AD);
-							if ($cov[0]==0 && $cov[1]==0) {
+						if ($GT =~ m/0\/[123456789]|1\/1|2\/2|3\/3|4\/4|5\/5|6\/6|7\/7/ && $AD ne ".") {
+							my @bases=split("/", $GT);
+							my @allele_cov=split(",", $AD);
+						
+							if ($allele_cov[0] == 0 && $allele_cov[$bases[1]] == 0) {
 								$geno_flag = "E";
 								#print "#WARNING: Call made on 0 depth is found, possible bug of GATK VQSR. the line is :\n$line\n";
 							} else {
-								my $test_v = $cov[1];
-								$test_v = $cov[0] if $cov[0] < $cov[1];
-								$p_bino = 2*&Math::CDF::pbinom($test_v, $cov[0]+$cov[1], 0.5);
-								if ($GT =~ m/0\/1/) {
+								my $test_v = $allele_cov[$bases[1]];
+								$test_v = $allele_cov[0] if $allele_cov[0] < $allele_cov[$bases[1]];
+								$p_bino = 2*&Math::CDF::pbinom($test_v, $allele_cov[0]+$allele_cov[$bases[1]], 0.5);
+								if ($GT =~ m/0\/[123456789]/) {
 									if ($p_bino < 0.05) {
 										$geno_flag = "B"; #bad call for hetero
 									} else {
-										if ($cov[0]+$cov[1] >= 10) {
+										if ($allele_cov[0]+$allele_cov[$bases[1]] >= 10) {
 											$geno_flag = "G";
 										} else {
 											$geno_flag = "B";
@@ -553,7 +555,7 @@ while (my $line=<INPUT>) {
 									}
 								} else {
 									if ($p_bino <= 0.05) {
-										if ($cov[0]+$cov[1] >= 10) {
+										if ($allele_cov[0]+$allele_cov[$bases[1]] >= 10) {
 											$geno_flag = "G"; #bad call for hetero
 										}else {
 											$geno_flag = "B";
