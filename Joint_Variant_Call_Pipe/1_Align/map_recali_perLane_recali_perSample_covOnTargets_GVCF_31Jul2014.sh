@@ -310,6 +310,9 @@ rm -r $JAVA_TMP_DIR
 BED_OUTPUT="${COV_DIR}/${SAMPLE_ID}_onTargets.txt"
 echo $'\n'"coverageBed -abam $FINAL_BAM -b $TARGETS -hist -split > $BED_OUTPUT"
 coverageBed -abam $FINAL_BAM -b $TARGETS -hist -split > $BED_OUTPUT
+COV_OUTPUT="${COV_DIR}/${SAMPLE_ID}_onTargets.summerized.txt"
+echo perl ${SCRIPTS_DIR}/coverage_summary_on_exon_list_on_singleFile.pl --CovFileName $BED_OUTPUT --output ${COV_OUTPUT}
+perl ${SCRIPTS_DIR}/coverage_summary_on_exon_list_on_singleFile.pl --CovFileName $BED_OUTPUT --output ${COV_OUTPUT}
 
 echo $'\n'"["`date`"]: The whole job is DONE!!"
 

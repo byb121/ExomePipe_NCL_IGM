@@ -4,6 +4,9 @@
 #$ -pe smp 4
 #$ -l h_vmem=16G
 
+# MQ is dropped to use temporarily. It is not informative for the recalibration because the use of bwa-mem
+# Majority (must be over 99%) of the scores is 60
+
 set -e
 # Load Modules
 #/******************** on lampredi2
@@ -47,12 +50,12 @@ echo "$RAW_VCF_INPUT"
 
 # SNP error model
 java -Xmx8g -jar $GATKDIR/GenomeAnalysisTK.jar -T VariantRecalibrator -R $REF_FILE \
+--disable_auto_index_creation_and_locking_when_reading_rods \
 -resource:hapmap,known=false,training=true,truth=true,prior=15.0 $HAPMAP \
 -resource:dbsnp,known=true,training=false,truth=false,prior=2.0 ${DBSNP} \
 -resource:omni,known=false,training=true,truth=true,prior=12.0 $OMNI \
 -resource:1000G,known=false,training=true,truth=false,prior=10.0 ${SNP_1000G} \
 -an QD \
--an MQ \
 -an MQRankSum \
 -an ReadPosRankSum \
 -an FS \
@@ -62,8 +65,10 @@ java -Xmx8g -jar $GATKDIR/GenomeAnalysisTK.jar -T VariantRecalibrator -R $REF_FI
 -recalFile $SNP_RECAL_FILE \
 -tranchesFile $SNP_TRANCH_FILE \
 -rscriptFile $SNP_RECAL_R_SCRIPT
+#-an MQ \
 
 java -Xmx8g -jar $GATKDIR/GenomeAnalysisTK.jar -T ApplyRecalibration -R $REF_FILE \
+--disable_auto_index_creation_and_locking_when_reading_rods \
 -input ${RAW_VCF_INPUT} \
 --ts_filter_level 99.5 \
 -recalFile $SNP_RECAL_FILE \
@@ -73,6 +78,7 @@ java -Xmx8g -jar $GATKDIR/GenomeAnalysisTK.jar -T ApplyRecalibration -R $REF_FIL
 
 #indel model
 java -Xmx8g -jar $GATKDIR/GenomeAnalysisTK.jar -T VariantRecalibrator -R $REF_FILE \
+--disable_auto_index_creation_and_locking_when_reading_rods \
 --maxGaussians 4 \
 -resource:mills,known=false,training=true,truth=true,prior=12.0 $MILLS_INDEL \
 -resource:dbsnp,known=true,training=false,truth=false,prior=2.0 ${DBSNP} \
@@ -88,6 +94,7 @@ java -Xmx8g -jar $GATKDIR/GenomeAnalysisTK.jar -T VariantRecalibrator -R $REF_FI
 -rscriptFile $INDEL_RECAL_R_SCRIPT
 
 java -Xmx8g -jar $GATKDIR/GenomeAnalysisTK.jar -T ApplyRecalibration -R $REF_FILE \
+--disable_auto_index_creation_and_locking_when_reading_rods \
 -input $SNP_RECALI_OUTPUT \
 --ts_filter_level 99.0 \
 -recalFile $INDEL_RECAL_FILE \

@@ -19,6 +19,8 @@ CNV=$7
 InterestedGENES=$8
 AnnovarDIR=$9
 PERL_SCRIPT_DIR=${10}
+BATCH_MAF=${11}
+OUTPUT_VCF=${12}
 
 if [[ $SCRIPT != *After_Annovared* ]]
 then
@@ -31,8 +33,10 @@ fi
 perl $SCRIPT --vcf ${SAMPLE_SELECTED_VCF} \
 --out ${OUTPUT} \
 --outAll ${OUTPUT_Everthing} \
+--outVCF ${OUTPUT_VCF} \
 --add_genotypeCall_flags Yes \
 --CNV $CNV \
 --InterestedGenes $InterestedGENES \
+--batchMAF ${BATCH_MAF} \
 --AnnovarDIR $AnnovarDIR
 

@@ -124,8 +124,9 @@ echo $'\n'"["`date`"]: The fastuniq job is DONE!!"
 echo "["`date`"]: Submitting following job"
 JOB_ID="Yaobo_Exome_${SAMPLE_ID}_2nd_stage"
 arr=("${SAMPLE_ID}" "${SAMPLE_PATH}" "${SCRIPTS_DIR}" "${REF_DIR}" "${SCRATCH_DIR}" "${TARGETS}" "${SEQ_PLATFORM}" "${Library_ID}" "${COV_DIR_NAME}" "${GATK_OUT_DIR_NAME}" "${DUP_FREE_BAM_DIR_NAME}" "${WRKGDIR_NAME}" "${JAVA_TMP_DIR_NAME}")
-#qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_recali_perLane_recali_perSample_covOnTargets_GVCF_31Jul2014.sh "${arr[@]}"
-qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_redup.sh "${arr[@]}"
+# qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_recali_perLane_recali_perSample_covOnTargets_GVCF_31Jul2014.sh "${arr[@]}"
+qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_recali_perLane_recali_perSample_covOnTargets_GVCF_31Jul2014.sh "${arr[@]}"
+#qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_redup.sh "${arr[@]}"
 
 # runtime calculation
 res2=$(date +%s.%N)

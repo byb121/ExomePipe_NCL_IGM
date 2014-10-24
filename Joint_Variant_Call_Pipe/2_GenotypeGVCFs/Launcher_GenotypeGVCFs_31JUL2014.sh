@@ -13,10 +13,10 @@
 
 
 #/************************* Paras need to be adjusted for diff samples
-GVCF_LIST_FILE="/home/a5907529/WORKING_DATA/Sophie_A1969/scripts/GenotypeGVCFs/GVCF.list"
-SCRIPT_PATH="/home/a5907529/WORKING_DATA/Sophie_A1969/scripts/GenotypeGVCFs"
+GVCF_LIST_FILE="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/GenotypeGVCFs/GVCF.list"
+SCRIPT_PATH="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/GenotypeGVCFs"
 REF_FILE="/sharedlustre/IGM/GATK/bundle2.8/b37/human_g1k_v37_decoy.fasta"
-OUT_DIR="/home/a5907529/WORKING_DATA/Sophie_A1969/scripts/GenotypeGVCFs/HC_out" #gatk tuned alignment file output directory name
+OUT_DIR="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/GenotypeGVCFs/HC_out" #gatk tuned alignment file output directory name
 JAVA_TMP_DIR_NAME="_no_QC" #tail of temp java working directory under scratch dir
 
 if [ ! -d $OUT_DIR ]; then
