@@ -32,7 +32,7 @@ JAVA_TMP_DIR_NAME=${13}
 
 #/************************ fmscluster add modules
 # need to add line here to load fastuniq module
-#GATK 3.1.1 /home/a5907529/WORKING_DATA/QC_GOOD/GATK3
+module add apps/seqtk
 #*************************/
 
 #/************************ lampredi2 add modules
@@ -109,6 +109,17 @@ do
 	echo fastuniq -i "${FASTQ_LIST_FILE}" -t q -o "${READ_FILE1_nodup}" -p "${READ_FILE2_nodup}"
 	fastuniq -i "${FASTQ_LIST_FILE}" -t q -o "${READ_FILE1_nodup}" -p "${READ_FILE2_nodup}"
 	
+	#/******Soly for illumina 1.5 encoded base scores
+	READ_FILE1_nodup_temp="${READ_FILE1_nodup}.temp.scoreConvert.fastq"
+	READ_FILE2_nodup_temp="${READ_FILE2_nodup}.temp.scoreConvert.fastq"
+	mv ${READ_FILE1_nodup} ${READ_FILE1_nodup_temp}
+	mv ${READ_FILE2_nodup} ${READ_FILE2_nodup_temp}
+	seqtk seq -VQ64 ${READ_FILE1_nodup_temp} > ${READ_FILE1_nodup}
+	rm ${READ_FILE1_nodup_temp}
+	seqtk seq -VQ64 ${READ_FILE2_nodup_temp} > ${READ_FILE2_nodup}
+	rm ${READ_FILE2_nodup_temp}
+	#convert is done ******/
+	
 	echo rm $READ_FILE1
 	rm ${READ_FILE1}
 	echo rm $READ_FILE2
@@ -126,7 +137,7 @@ JOB_ID="Yaobo_Exome_${SAMPLE_ID}_2nd_stage"
 arr=("${SAMPLE_ID}" "${SAMPLE_PATH}" "${SCRIPTS_DIR}" "${REF_DIR}" "${SCRATCH_DIR}" "${TARGETS}" "${SEQ_PLATFORM}" "${Library_ID}" "${COV_DIR_NAME}" "${GATK_OUT_DIR_NAME}" "${DUP_FREE_BAM_DIR_NAME}" "${WRKGDIR_NAME}" "${JAVA_TMP_DIR_NAME}")
 # qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_recali_perLane_recali_perSample_covOnTargets_GVCF_31Jul2014.sh "${arr[@]}"
 qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_recali_perLane_recali_perSample_covOnTargets_GVCF_31Jul2014.sh "${arr[@]}"
-#qsub -N "${JOB_ID}" ${SCRIPTS_DIR}/map_redup.sh "${arr[@]}"
+
 
 # runtime calculation
 res2=$(date +%s.%N)

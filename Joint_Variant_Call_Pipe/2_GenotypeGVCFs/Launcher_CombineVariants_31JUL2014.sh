@@ -13,10 +13,10 @@
 
 
 #/************************* Paras need to be adjusted for diff samples
-INPUT="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/GenotypeGVCFs/HC_out" #folder of GenotypeGVCFs output
-SCRIPT_PATH="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/GenotypeGVCFs"
+INPUT="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_GenotypeGVCFs/HC_out" #folder of GenotypeGVCFs output
+SCRIPT_PATH="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_GenotypeGVCFs"
 REF_FILE="/sharedlustre/IGM/GATK/bundle2.8/b37/human_g1k_v37_decoy.fasta"
-OUTPUT_FILE="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/GenotypeGVCFs/HC_out_combined.vcf" #gatk tuned alignment file output directory name
+OUTPUT_FILE="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_GenotypeGVCFs/HC_out_combined.vcf" #gatk tuned alignment file output directory name
 JAVA_TMP_DIR_NAME="_hulala" #tail of temp java working directory under scratch dir
 #**************************/
 

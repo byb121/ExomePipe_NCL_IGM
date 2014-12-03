@@ -13,10 +13,10 @@
 
 
 #/************************* Paras need to be adjusted for diff samples
-BAM_LIST_FILE="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/Freebayes/Bam.list"
-SCRIPT_PATH="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/Freebayes"
+BAM_LIST_FILE="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_Freebayes/Bam.list"
+SCRIPT_PATH="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_Freebayes"
 REF_FILE="/sharedlustre/IGM/GATK/bundle2.8/b37/human_g1k_v37_decoy.fasta"
-OUT_DIR="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/Freebayes/Free_out" #gatk tuned alignment file output directory name
+OUT_DIR="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_Freebayes/Free_out" #gatk tuned alignment file output directory name
 
 if [ ! -d $OUT_DIR ]; then
 	mkdir $OUT_DIR
