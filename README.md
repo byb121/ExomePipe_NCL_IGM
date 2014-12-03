@@ -10,12 +10,23 @@ There are two types of scripts right now:
 * Scripts doing an specific job, and
 * Scripts controlling the workflow and submit ordered scripts to the queue engine of a HPC.
 
-The 1st kind of scripts requires no change or minor change from project to project, but the 2nd type of scripts is required to change in a new project setup.
+The 1st kind of scripts requires no change or minor change from project to project, but the 2nd type of scripts is required to change in order to fit a new project setup.
 
-There are two main pipelines grouped in two different folders:
-GATK_Variant_Call_Pipe: Mainly to achieve the best practice suggested in GATK forum. The pipeline does mapping with BWA -> samtools -> PICARD to remove duplicated reads -> Indel Realignment -> Base Quality Recalibration -> HaplotypeCaller -> Variants Quality Recalibration -> Annovar for variant filteration.
+There are two main pipelines grouped into two folders:
 
-Joint_Variant_Call_Pipe: We constantly find GATK HaplotypeCaller misses true variants, while meantime Freebayes become more popular. In August 2014, I added pipeline to do a simple joint variant calls between GATK HaplotypeCaller and Freebayes, GVCF format is used as well as suggest by the GATK Best Practice for GATK 3.2.  The pipeline does duplication removal with FastUniq -> mapping with BWA mem -> PICARD to sort sam and convert to bam -> Indel Realignment -> Base Quality Recalibration -> HaplotypeCaller to produce GVCFs, then call variants with Freebayes from PICARD output bam files and GATK GenotypeGVCFs from GVCFs -> Quality Recalibration of GATK output -> joint variants calls -> Annovar for variant annotation and filtering.
+* 1. GATK_Variant_Call_Pipe
+Mainly to achieve the best practice suggested in GATK forum. The pipeline does mapping with BWA -> samtools -> Indel Realignment -> Base Quality Recalibration -> HaplotypeCaller -> Variants Quality Recalibration -> Annovar for variant filteration.
+
+update (Nov 2014):
+The pipeline has changed according to the new best practice (GATK V3.1 and above). GVCF files are produced after alignment, scalar scripts for HaplotypeCaller is no longer needed. The pipeline is now using FastUniq to remove duplicated reads instead of PICARD. PICARD is still used to convert SAM files into sorted BAMs. The pipeline does the following jobs:
+FastUniq -> BWA -> PICARD -> Indel Realignment -> Base Quality Recalibration -> HaplotypeCaller(GVCFs) -> GenotypeGVCFs from GVCFs -> Variant Quality Recalibration -> Annovar for variant annotation and filtering
+
+
+* 2. Joint_Variant_Call_Pipe
+We constantly find GATK HaplotypeCaller misses true variants, while meantime Freebayes become more popular. In August 2014, I added pipeline to do a simple joint variant calls using GATK HaplotypeCaller and Freebayes. GVCF format is used as suggest in the new GATK Best Practice for GATK 3.2. 
+The pipeline does:
+Duplication removal with FastUniq -> mapping with BWA mem -> PICARD to sort sam and convert to bam -> Indel Realignment -> Base Quality Recalibration -> HaplotypeCaller to produce GVCFs, then call variants with Freebayes from PICARD output bam files and GATK GenotypeGVCFs from GVCFs -> Quality Recalibration of GATK output -> joint variants calls -> Annovar for variant annotation and filtering.
+
 
 Sample Folder Structure
 -----------------
@@ -26,13 +37,11 @@ Ideally, each biological sample should have its own folder under a project folde
 
 * detectSampleLanes.pl
 * map_recali_perLane_recali_perSample_covOnTargets_GVCF_31Jul2014.sh
-* map_recali_perLane_recali_perSample_covOnTargets_26MAY2014.sh
 * redupFastuniq_31Jul2014.sh
 
 
 Other things
 -----------------
-
+* FastUniq, autoadapt may need to be installed
 * Annovar installation and annotations may be very different, so the annotation scripts may need to change a lot
 
-To be continued…
