@@ -14,10 +14,10 @@
 
 #/************************* Paras need to be adjusted for diff samples
 
-SAMPLE_PATH="/home/a5907529/WORKING_DATA/Linda_20141024"
-SCRIPT_PATH="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/1_Align"
-TARGETS="${SCRIPT_PATH}/AgilentCaptureTargets_SureSelect_Human_All_Exon_V5_plus_UTRs.b37.bed"
-Library_ID="Majlinda.BGI.1" #Better to use {PI name}.{Batch Number} to identify the library
+SAMPLE_PATH="/home/a5907529/WORKING_DATA/Sophie_A2463"
+SCRIPT_PATH="/home/a5907529/WORKING_DATA/Sophie_A2463/scripts/Align"
+TARGETS="${SCRIPT_PATH}/refSeq.CDS.b37.2014Aug.bed"
+Library_ID="Sophie.A2463.b1" #Better to use {PI name}.{Batch Number} to identify the library
 
 REFDIR="/sharedlustre/IGM/GATK/bundle2.8/b37"
 #SCRATCH_DIR="/users/a5907529/scratch"
@@ -40,13 +40,13 @@ INALL=( "${SAMPLE_PATH}"/Sample_* )
 for SampleFolder in "${INALL[@]}"; do
 	SAMPLE_ID="${SampleFolder##*/Sample_}"
 	#if [[ $SAMPLE_ID == NG-7460_SA_D64614 ||  $SAMPLE_ID == NG-7460_VH_D197700 ]]; then
-	#if [[ $SAMPLE_ID == *merge ]]; then
+	if [[ $SAMPLE_ID == F99248 ]]; then
 	       	JOB_ID1="Yaobo_Exome_${SAMPLE_ID}_1st_stage"
 		arr=("${SAMPLE_ID}" "${SAMPLE_PATH}" "${SCRIPT_PATH}" "$REFDIR" "${SCRATCH_DIR}" "$TARGETS" "${SEQ_PLATFORM}" "${Library_ID}" "${COV_OUT_DIR_NAME}" "${GATK_OUT_DIR_NAME}" "${DUP_FREE_BAM_DIR_NAME}" "${WRKGDIR_NAME}" "${JAVA_TMP_DIR_NAME}")
 	        echo "${SAMPLE_ID}"
 		#echo qsub -N "${JOB_ID1}" ${SCRIPT_PATH}/redupFastuniq_31Jul2014.sh "${arr[@]}"
 		qsub -N "${JOB_ID1}" ${SCRIPT_PATH}/redupFastuniq_31Jul2014.sh "${arr[@]}"
 		#sh ${SCRIPT_PATH}/redupFastuniq_31Jul2014.sh "${arr[@]}"
-	#fi
+	fi
 done
 

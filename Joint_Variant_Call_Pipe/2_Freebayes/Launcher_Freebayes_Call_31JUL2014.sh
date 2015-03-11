@@ -1,11 +1,5 @@
 #! /bin/bash
 
-#**********************************  important!!  *******************************************
-#if use the script after trimming: fastq file name patterns need to be changed as following: 
-# comment out - "map_recali_perLane_recali_perSample_covOnTargets_26MAY2014.sh" line 112, 113
-# and use line 108, 109 
-# the comment out - "detectSampleLanes.pl" line 13 use line 16
-#********************************************************************************************
 
 ## Script to launch Exome Pipeline (Picard - GATK bam recalibration - GATK call variants & varscan & dindel & bedtools for coverage) for multiple samples
 ## INALL is an array of directory names, with one directory per sample
@@ -13,10 +7,10 @@
 
 
 #/************************* Paras need to be adjusted for diff samples
-BAM_LIST_FILE="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_Freebayes/Bam.list"
-SCRIPT_PATH="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_Freebayes"
+BAM_LIST_FILE="/home/a5907529/WORKING_DATA/Sophie_A1969/scripts/Freebayes/Bam.list"
+SCRIPT_PATH="/home/a5907529/WORKING_DATA/Sophie_A1969/scripts/Freebayes"
 REF_FILE="/sharedlustre/IGM/GATK/bundle2.8/b37/human_g1k_v37_decoy.fasta"
-OUT_DIR="/home/a5907529/WORKING_DATA/Linda_20141024/scripts/2_Freebayes/Free_out" #gatk tuned alignment file output directory name
+OUT_DIR="/home/a5907529/WORKING_DATA/Sophie_A1969/scripts/Freebayes/Free_out" #gatk tuned alignment file output directory name
 
 if [ ! -d $OUT_DIR ]; then
 	mkdir $OUT_DIR

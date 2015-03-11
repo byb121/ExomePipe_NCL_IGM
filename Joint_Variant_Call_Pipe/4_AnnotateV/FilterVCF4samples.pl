@@ -40,7 +40,7 @@ Line: while ( my $line = <VCF> ) {
                 for (my $i = 9; $i < scalar @temp; $i++) {
                     if ($temp[$i] =~ m/^$sample$/) {
                         print "Found sample $sample on column $i.\n";
-                        $index{$i} = 1;
+                        $index{$i} = $sample;
                         $temp_string=$temp_string."$sample\t";
                     }
                 }
@@ -75,11 +75,12 @@ Line: while ( my $line = <VCF> ) {
             for (my $i=0;$i<9;$i++) {
                 $temp_string=$temp_string."$temp[$i]\t";
             }
+            
+            my %sample_gt;
 			for(my $i=9;$i< scalar @temp; $i++){
                 if (exists $index{$i}) {
-                    my $sample = $temp[$i];
-                    #print "use column $i\n";
-                    $temp_string=$temp_string."$sample\t";
+                	my $sample = $temp[$i];
+                    $sample_gt{$index{$i}} = $sample;
                     if ($sample !~ m/^\./) {
                         my @sample_fields = split(":", $sample);
                         if ($sample_fields[$GT_index] =~ m/^0\/0/) {
@@ -90,17 +91,21 @@ Line: while ( my $line = <VCF> ) {
                     }
                 }
             }
+            
+            foreach my $sample (@samples) {
+            	$temp_string=$temp_string.$sample_gt{$sample}."\t";
+            }
+            
 		} else {
-            #print "skip line without GT tag\n";
+            
             next Line;
         }
         
+	
         if (scalar @samples > ($na_count+$ref_count) ) {
-		        #my $sum=$na_count+$ref_count;
-		        #print "$line_count: na plus ref: $sum\n";
-		        $temp_string =~ s/\t$//;
-			print OUT $temp_string."\n";
-        	}
+                               $temp_string =~ s/\t$//;
+		            print OUT $temp_string."\n";
+        }
 	}
 }
 
@@ -118,4 +123,11 @@ sub usage {
     print "--output output file name.\n";
     return(1);
 }
+
+
+
+
+
+
+
 

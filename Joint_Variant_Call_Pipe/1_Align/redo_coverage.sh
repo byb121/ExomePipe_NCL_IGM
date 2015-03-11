@@ -182,10 +182,10 @@ FINAL_BAM="${GATK_OUT_DIR}/${SAMPLE_ID}_nodups.realigned.recalibrated.bam"
 DUP_FREE_BAM="${DUP_FREE_BAM_DIR}/${SAMPLE_ID}_nodups.bam"
 
 #Coverage on targets file
-BED_OUTPUT="${COV_DIR}/${SAMPLE_ID}_onTargets.txt"
+BED_OUTPUT="${COV_DIR}/${SAMPLE_ID}_onCDS.txt"
 echo $'\n'"coverageBed -abam $FINAL_BAM -b $TARGETS -hist -split > $BED_OUTPUT"
 coverageBed -abam $FINAL_BAM -b $TARGETS -hist -split > $BED_OUTPUT
-COV_OUTPUT="${COV_DIR}/${SAMPLE_ID}_onTargets.summerized.txt"
+COV_OUTPUT="${COV_DIR}/${SAMPLE_ID}_onCDS.summerized.txt"
 echo perl ${SCRIPTS_DIR}/coverage_summary_on_exon_list_on_singleFile.pl --CovFileName $BED_OUTPUT --output ${COV_OUTPUT}
 perl ${SCRIPTS_DIR}/coverage_summary_on_exon_list_on_singleFile.pl --CovFileName $BED_OUTPUT --output ${COV_OUTPUT}
 
