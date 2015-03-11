@@ -1185,9 +1185,3 @@ sub BatchMAF {
 	close OUT;
 }
 
-
-
-
-
-
-
